@@ -6,7 +6,7 @@ import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import { uiActions } from './store/ui-slice';
 import Notifications from './components/UI/Notification';
-import { sendCartData } from './store/cart-slice';
+import { fetcCartData, sendCartData } from './store/cart-actions';
 
 let isInitial = true;
 
@@ -16,6 +16,12 @@ function App() {
   const cart = useSelector(state => state.cart);
   const notification = useSelector(state => state.ui.notification);
 
+  useEffect(() => {
+    if(!cart.changed){
+      dispatch(fetcCartData());
+    }
+  }, [dispatch]);
+
   //For side-effect in action creator (Thunk)
   useEffect(() => {
     if(isInitial){
@@ -23,7 +29,9 @@ function App() {
       return;
     }
 
-    dispatch(sendCartData(cart));
+    if(cart.changed){
+      dispatch(sendCartData(cart));
+    }
   }, [cart, dispatch])
 
   // // For side-effect in component
